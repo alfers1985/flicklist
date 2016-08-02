@@ -14,7 +14,7 @@ var model = {
 
 var api = {
   root: "https://api.themoviedb.org/3",
-  token: "8e888fa39ec243e662e1fb738c42ae99" // TODO 0 add your api key
+  token: "c665d840e21dbe2b26215f0b92b9d678" // TODO 0 add your api key -- done
 }
 
 
@@ -51,7 +51,17 @@ function searchMovies(searchTerm, callback) {
   // TODO 9
   // implement this function as described in the comment above
   // you can use the body of discoverMovies as a jumping off point
-
+    $.ajax({
+    url: api.root + "/search/movie",
+    data: {
+      api_key: api.token,
+      query: searchTerm
+    },
+    success: function(response) {
+      model.browseItems = response.results;
+      callback();
+    }
+  });
 
 }
 
@@ -64,12 +74,14 @@ function render() {
   // clear everything
   $("#section-watchlist ul").empty();
   $("#section-browse ul").empty();
-
+  console.log(model);
   // insert watchlist items
   model.watchlistItems.forEach(function(movie) {
+    
     var title = $("<p></p>").text(movie.original_title);
     var itemView = $("<li></li>")
       .append(title)
+      .attr("class","item-watchlist");
       // TODO 3
       // give itemView a class attribute of "item-watchlist"
 
@@ -79,28 +91,33 @@ function render() {
   // insert browse items
   model.browseItems.forEach(function(movie) {
     var title = $("<h4></h4>").text(movie.original_title);
+    var description = $("<p></p>").text(movie.overview);
     var button = $("<button></button>")
       .text("Add to Watchlist")
       .click(function() {
         model.watchlistItems.push(movie);
         render();
-      });
+      })
+      
       // TODO 2
       // the button should be disabled if this movie is already in
       // the user's watchlist
       // see jQuery .prop() and Array.indexOf()
+      .prop("disabled", model.watchlistItems.indexOf(movie) !== -1);
+  
 
 
     // TODO 1
     // create a paragraph containing the movie object's .overview value
     // then, in the code block below,
-    // append the paragraph in between the title and the button
+    // append the paragraph in between the title and the button -- done
 
 
     // append everything to itemView, along with an <hr/>
     var itemView = $("<li></li>")
       .append($("<hr/>"))
       .append(title)
+      .append(description)
       .append(button);
 
     // append the itemView to the list
